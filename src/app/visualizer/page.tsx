@@ -71,7 +71,6 @@ export default function Visualizer() {
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           fitView
-          colorMode="dark"
         >
           <Background color="#171717" gap={16} />
           <Controls />
