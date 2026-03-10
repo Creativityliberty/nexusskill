@@ -1,0 +1,19 @@
+# Example: Multi-step Knowledge Agent
+# Usage: num-agents generate --spec example-agent.yaml
+
+agent:
+  name: "ExampleKnowledgeAgent"
+  description: "Fetches documents, indexes them, and answers questions with memory"
+  univers:
+    - PocketFlowCore
+    - StructureAgentIA
+    - KnowledgeLayer
+    - RAGUnivers
+    - APIConnectorUnivers
+  protocol: N2A
+  llm: claude-sonnet-4-6
+  memory: true
+  eventbus: false
+  scheduler: false
+  metrics: true
+  tracing: true

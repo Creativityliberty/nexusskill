@@ -1,0 +1,61 @@
+schema_version: "1"
+registry_id: "<your-system-name>-v1"
+
+# ─────────────────────────────────────────────
+# ACTIONS — one entry per capability
+# ─────────────────────────────────────────────
+actions:
+  - action_id: <action_id_1>
+    tool: <tool_name_1>
+    description: "<What this action does in plain language>"
+    args_schema:
+      type: object
+      properties:
+        <param_name>:
+          type: string
+          description: "<what this param means>"
+      required: [<param_name>]
+    security:
+      requires_approval: false     # set true for destructive / high-risk actions
+      allowed_roles: []            # empty = all roles allowed
+
+  - action_id: <action_id_2>
+    tool: <tool_name_2>
+    description: "<What this action does>"
+    args_schema:
+      type: object
+      properties:
+        <param_a>: {type: string}
+        <param_b>: {type: integer}
+      required: [<param_a>]
+    security:
+      requires_approval: true
+      allowed_roles: ["admin", "manager"]
+
+# ─────────────────────────────────────────────
+# TOOL CONTRACTS — one entry per unique tool
+# ─────────────────────────────────────────────
+tool_contracts:
+  - tool: <tool_name_1>
+    endpoint: "stub"               # replace with real URL / adapter ref
+
+  - tool: <tool_name_2>
+    endpoint: "stub"
+
+# ─────────────────────────────────────────────
+# TENANT OVERRIDES — per-tenant permissions
+# ─────────────────────────────────────────────
+tenant_overrides:
+  <tenant_id_a>:
+    enabled_actions: [<action_id_1>, <action_id_2>]
+    enabled_tools: [<tool_name_1>, <tool_name_2>]
+    security_overrides: []         # no security changes for this tenant
+
+  <tenant_id_b>:
+    enabled_actions: [<action_id_1>]          # limited access
+    enabled_tools: [<tool_name_1>]
+    security_overrides:
+      - action_id: <action_id_2>
+        set:
+          - path: /security/requires_approval
+            value: false           # override: no approval for this tenant

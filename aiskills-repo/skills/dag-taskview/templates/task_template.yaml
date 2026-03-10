@@ -1,0 +1,40 @@
+# Sample task definition for DAG TaskView
+# Copy and modify this template for your project
+
+project: "Build REST API"
+
+tasks:
+  - id: design
+    name: "Design API Schema"
+    status: done
+    deps: []
+
+  - id: auth
+    name: "Implement Authentication"
+    status: in_progress
+    deps: [design]
+
+  - id: crud
+    name: "Build CRUD Endpoints"
+    status: pending
+    deps: [design]
+
+  - id: validation
+    name: "Input Validation Layer"
+    status: pending
+    deps: [crud]
+
+  - id: tests
+    name: "Write Unit Tests"
+    status: blocked
+    deps: [auth, crud]
+
+  - id: docs
+    name: "API Documentation"
+    status: pending
+    deps: [crud, auth]
+
+  - id: deploy
+    name: "Deploy to Production"
+    status: pending
+    deps: [tests, docs, validation]

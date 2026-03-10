@@ -1,0 +1,92 @@
+# Nüm Agents Specification
+# Agent: DocUpdateAgent
+# Description: Auto-updates project documentation using LLM analysis of Git commits
+
+agent:
+  name: DocUpdateAgent
+  description: "Agent PocketFlow pour la mise à jour automatique de la documentation projet via LLM"
+  univers:
+    - PocketFlowCore        # Node/Flow execution engine
+    - StructureAgentIA      # Structured LLM output
+    - KnowledgeLayer        # Document memory & context
+  protocol: N2A
+  llm: gemini-2.5-flash
+  memory: true              # Remember previous doc states
+  eventbus: false
+  scheduler: false
+  metrics: false
+  tracing: true             # Log every node transition
+
+flows:
+  # Full documentation update pipeline
+  - name: full-update
+    description: "Update all project documentation from latest Git commits"
+    nodes:
+      - git_commit
+      - dm_log_parser
+      - dm_log_llm
+      - dm_log_update
+      - model_concept_update
+      - project_structure_update
+      - tasks_update
+      - requirements_update
+      - git_push
+    transitions:
+      - from: git_commit
+        to: dm_log_parser
+        on: default
+      - from: dm_log_parser
+        to: dm_log_llm
+        on: default
+      - from: dm_log_llm
+        to: dm_log_update
+        on: default
+      - from: dm_log_update
+        to: model_concept_update
+        on: default
+      - from: model_concept_update
+        to: project_structure_update
+        on: default
+      - from: project_structure_update
+        to: tasks_update
+        on: default
+      - from: tasks_update
+        to: requirements_update
+        on: default
+      - from: requirements_update
+        to: git_push
+        on: default
+
+  # DM-Log only
+  - name: dm-log
+    description: "Update only the DM-Log journal"
+    nodes:
+      - git_commit
+      - dm_log_parser
+      - dm_log_llm
+      - dm_log_update
+      - git_push
+    transitions:
+      - from: git_commit
+        to: dm_log_parser
+        on: default
+      - from: dm_log_parser
+        to: dm_log_llm
+        on: default
+      - from: dm_log_llm
+        to: dm_log_update
+        on: default
+      - from: dm_log_update
+        to: git_push
+        on: default
+
+  # MCD only
+  - name: mcd-update
+    description: "Update only the MCD & Garde-fous document"
+    nodes:
+      - model_concept_update
+      - git_push
+    transitions:
+      - from: model_concept_update
+        to: git_push
+        on: default
