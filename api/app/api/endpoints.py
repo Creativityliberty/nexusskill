@@ -20,13 +20,35 @@ async def list_skills(api_key: str = Depends(get_api_key), db: Session = Depends
 @router.post("/skills/sync")
 async def sync_skills(api_key: str = Depends(get_api_key)):
     try:
-        # Check current working directory for debugging
         import os
         cwd = os.getcwd()
-        print(f"Current working directory: {cwd}")
+        print(f"CWD: {cwd}")
         
-        # Try finding aiskills-repo relative to API root
-        count = ingest_local_skills("aiskills-repo/skills")
+        # Path hunting
+        possible_paths = [
+            "aiskills-repo/skills",           # Root relative
+            "../aiskills-repo/skills",        # API-subfolder relative
+            "api/aiskills-repo/skills",       # Nested relative
+            "/var/task/aiskills-repo/skills" # Vercel absolute common path
+        ]
+        
+        repo_path = None
+        for p in possible_paths:
+            if os.path.exists(p):
+                repo_path = p
+                print(f"Found repository at: {p}")
+                break
+        
+        if not repo_path:
+            # Last ditch: search for it
+            print("Repository not found in common paths. Searching...")
+            for root, dirs, files in os.walk(cwd):
+                if "aiskills-repo" in dirs:
+                    repo_path = os.path.join(root, "aiskills-repo/skills")
+                    print(f"Found repository via walk: {repo_path}")
+                    break
+        
+        count = ingest_local_skills(repo_path or "aiskills-repo/skills")
         return {"status": "success", "message": f"Successfully synchronized {count} skills from repository"}
     except Exception as e:
         print(f"Sync error: {str(e)}")
