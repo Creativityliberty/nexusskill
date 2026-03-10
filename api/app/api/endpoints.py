@@ -9,13 +9,21 @@ router = APIRouter()
 
 @router.get("/skills")
 async def list_skills(api_key: str = Depends(get_api_key), db: Session = Depends(get_db)):
-    skills = db.query(Skill).all()
-    if not skills:
+    try:
+        skills = db.query(Skill).all()
+        if not skills:
+            return [
+                {"name": "skill-creator", "description": "Guide for creating effective Claude Code skills."},
+                {"name": "ui-style-generator", "description": "Generate a complete UI Design System."}
+            ]
+        return skills
+    except Exception as e:
+        print(f"Skills DB error: {e}")
+        # Fallback for UI resilience
         return [
-            {"name": "skill-creator", "description": "Guide for creating effective Claude Code skills."},
-            {"name": "ui-style-generator", "description": "Generate a complete UI Design System."}
+            {"name": "Offline: skill-creator", "description": "Guide for creating effective Claude Code skills. (DB Offline)"},
+            {"name": "Offline: ui-style-generator", "description": "Generate a complete UI Design System. (DB Offline)"}
         ]
-    return skills
 
 @router.post("/skills/sync")
 async def sync_skills(api_key: str = Depends(get_api_key)):
@@ -31,11 +39,19 @@ async def sync_skills(api_key: str = Depends(get_api_key)):
 
 @router.get("/missions")
 async def list_missions(api_key: str = Depends(get_api_key), db: Session = Depends(get_db)):
-    return db.query(Mission).order_by(Mission.created_at.desc()).all()
+    try:
+        return db.query(Mission).order_by(Mission.created_at.desc()).all()
+    except Exception as e:
+        print(f"Missions DB error: {e}")
+        return []
 
 @router.get("/keys")
 async def list_keys(api_key: str = Depends(get_api_key), db: Session = Depends(get_db)):
-    return db.query(ApiKey).all()
+    try:
+        return db.query(ApiKey).all()
+    except Exception as e:
+        print(f"Keys DB error: {e}")
+        return []
 
 @router.post("/keys/generate")
 async def create_key(name: str = "New Key", api_key: str = Depends(get_api_key), db: Session = Depends(get_db)):
