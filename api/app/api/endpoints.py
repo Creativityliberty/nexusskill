@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
-from app.core.security import get_api_key
-from app.db.base import get_db
-from app.db.models import Skill, Mission
+from app.db.models import Skill, Mission, ApiKey
+from app.core.security import get_api_key, generate_api_key, hash_api_key
 from sqlalchemy.orm import Session
 from app.services.skill_ingestor import ingest_local_skills
 
@@ -30,6 +29,28 @@ async def sync_skills(api_key: str = Depends(get_api_key)):
 @router.get("/missions")
 async def list_missions(api_key: str = Depends(get_api_key), db: Session = Depends(get_db)):
     return db.query(Mission).order_by(Mission.created_at.desc()).all()
+
+@router.get("/keys")
+async def list_keys(api_key: str = Depends(get_api_key), db: Session = Depends(get_db)):
+    return db.query(ApiKey).all()
+
+@router.post("/keys/generate")
+async def create_key(name: str = "New Key", api_key: str = Depends(get_api_key), db: Session = Depends(get_db)):
+    raw_key = generate_api_key()
+    hashed = hash_api_key(raw_key)
+    
+    new_key = ApiKey(
+        key_hash=hashed,
+        name=name
+    )
+    db.add(new_key)
+    db.commit()
+    
+    return {
+        "name": name,
+        "key": raw_key,
+        "message": "Store this key safely. It will not be shown again."
+    }
 
 @router.post("/mission/plan")
 async def plan_mission(goal: str, api_key: str = Depends(get_api_key), db: Session = Depends(get_db)):

@@ -84,9 +84,11 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <Button variant="outline" className="border-neutral-800 hover:bg-neutral-900">
-            <Key className="mr-2 h-4 w-4" /> API Keys
-          </Button>
+          <Link href="/keys">
+            <Button variant="outline" className="border-neutral-800 hover:bg-neutral-900">
+              <Key className="mr-2 h-4 w-4" /> API Keys
+            </Button>
+          </Link>
           <Button 
             onClick={createMission}
             className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-900/20"
