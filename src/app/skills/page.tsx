@@ -51,7 +51,12 @@ export default function SkillMatrix() {
         headers: { 'X-Nexus-Key': 'development_key' }
       });
       if (response.ok) {
+        const data = await response.json();
+        alert(data.message || "Skills synchronized!");
         await fetchSkills();
+      } else {
+        const error = await response.json();
+        alert(`Sync failed: ${error.detail || "Internal Server Error"}`);
       }
     } catch (error) {
       console.error("Sync failed:", error);
