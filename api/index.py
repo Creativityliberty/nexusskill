@@ -4,8 +4,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.endpoints import router as api_router
 from app.db.base import engine, Base
 
-# Create tables on startup (simple approach for Phase 2)
-Base.metadata.create_all(bind=engine)
+# Resilient table creation
+def init_db():
+    try:
+        Base.metadata.create_all(bind=engine)
+        return True
+    except Exception as e:
+        print(f"Database initialization failed: {e}")
+        return False
+
+db_initialized = init_db()
 
 app = FastAPI(
     title="Nexus API",
@@ -29,6 +37,7 @@ async def root():
     return {
         "name": "Nexus API",
         "status": "online",
+        "db_status": "connected" if db_initialized else "disconnected/error",
         "version": "1.0.0",
         "org": "N\u00fcmtema AI FOUNDRY"
     }
