@@ -17,8 +17,16 @@ import {
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
+interface Mission {
+  id: number;
+  title: string;
+  description: string;
+  status: string;
+  created_at: string;
+}
+
 export default function Dashboard() {
-  const [missions, setMissions] = useState([]);
+  const [missions, setMissions] = useState<Mission[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
