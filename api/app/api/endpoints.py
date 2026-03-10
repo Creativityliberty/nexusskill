@@ -20,10 +20,16 @@ async def list_skills(api_key: str = Depends(get_api_key), db: Session = Depends
 @router.post("/skills/sync")
 async def sync_skills(api_key: str = Depends(get_api_key)):
     try:
-        # Note: path-relative to the API root in deployment
-        ingest_local_skills("aiskills-repo/skills")
-        return {"status": "success", "message": "Skills synchronized from repository"}
+        # Check current working directory for debugging
+        import os
+        cwd = os.getcwd()
+        print(f"Current working directory: {cwd}")
+        
+        # Try finding aiskills-repo relative to API root
+        count = ingest_local_skills("aiskills-repo/skills")
+        return {"status": "success", "message": f"Successfully synchronized {count} skills from repository"}
     except Exception as e:
+        print(f"Sync error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/missions")

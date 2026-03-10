@@ -11,10 +11,10 @@ def ingest_local_skills(repo_path: str = "../../aiskills-repo/skills"):
     db = SessionLocal()
     try:
         if not os.path.exists(repo_path):
-            print(f"Repo path not found: {repo_path}")
-            return
+            raise FileNotFoundError(f"Skill repository not found at: {os.path.abspath(repo_path)}")
             
-        for skill_dir in os.listdir(repo_path):
+        print(f"Scanning skills in: {os.path.abspath(repo_path)}")
+        count = 0
             skill_path = os.path.join(repo_path, skill_dir)
             if not os.path.isdir(skill_path):
                 continue
@@ -53,9 +53,11 @@ def ingest_local_skills(repo_path: str = "../../aiskills-repo/skills"):
                     content=content
                 )
                 db.add(new_skill)
+            count += 1
         
         db.commit()
-        print("Skill ingestion complete.")
+        print(f"Skill ingestion complete. {count} skills synchronized.")
+        return count
     finally:
         db.close()
 
