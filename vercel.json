@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/app/main.py"
+    }
+  ],
+  "functions": {
+    "api/app/main.py": {
+      "runtime": "vercel-python@0.2.1"
+    }
+  }
+}
