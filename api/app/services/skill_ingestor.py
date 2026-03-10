@@ -13,10 +13,10 @@ def ingest_local_skills(repo_path: str = None):
         # 1. Path Discovery
         search_paths = [
             repo_path,
+            "api/aiskills-repo/skills",
             "aiskills-repo/skills",
             "../aiskills-repo/skills",
-            "api/aiskills-repo/skills",
-            "backend/aiskills-repo/skills",
+            "/var/task/api/aiskills-repo/skills",
             "/var/task/aiskills-repo/skills"
         ]
         
