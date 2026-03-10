@@ -4,8 +4,8 @@
 
 Nexus is a professional-grade orchestration framework designed to bridge the gap between human vision and AI agent execution. It transforms project ideas into structured, high-quality deliverables while simultaneously optimizing your entire documentation for **39+ AI Coding Agents**.
 
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/Creativityliberty/nexusskill/graphs/commit-activity)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
+[![Organization: Nümtema AI Foundry](https://img.shields.io/badge/Org-Nümtema_AI_Foundry-blue.svg)](mailto:creativityliberty@gmail.com)
 
 ---
 
