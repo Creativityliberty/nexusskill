@@ -16,6 +16,14 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://user:pass@localhost/nexus")
 
+    @property
+    def SQLALCHEMY_DATABASE_URI(self) -> str:
+        """Fixes postgres:// vs postgresql:// for SQLAlchemy 2.0+"""
+        url = self.DATABASE_URL
+        if url and url.startswith("postgres://"):
+            return url.replace("postgres://", "postgresql://", 1)
+        return url
+
     class Config:
         case_sensitive = True
 
