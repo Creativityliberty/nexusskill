@@ -14,6 +14,7 @@ import {
   Terminal,
   Layers
 } from "lucide-react";
+import Link from "next/link";
 
 export default function Dashboard() {
   return (
@@ -158,13 +159,18 @@ export default function Dashboard() {
                 </Card>
 
                 <Card className="bg-neutral-900/50 border-neutral-800 h-[300px] p-6 flex flex-col items-center justify-center text-center">
-                  <div className="w-16 h-16 bg-neutral-800/50 rounded-full flex items-center justify-center mb-4">
-                    <Box className="text-neutral-600 w-8 h-8" />
+                  <div className="w-16 h-16 bg-blue-900/10 rounded-full flex items-center justify-center mb-4">
+                    <Box className="text-blue-500 w-8 h-8" />
                   </div>
-                  <h3 className="font-semibold text-neutral-300 mb-1">Visualizer Preview</h3>
-                  <p className="text-sm text-neutral-500 max-w-[200px]">
-                    Interactive mission tree and DAG explorer coming soon in Phase 2.
+                  <h3 className="font-semibold text-neutral-300 mb-1">Interactive Visualizer</h3>
+                  <p className="text-sm text-neutral-500 max-w-[200px] mb-4">
+                    Explore mission DAGs and task relationships in real-time.
                   </p>
+                  <Link href="/visualizer">
+                    <Button variant="outline" size="sm" className="border-blue-900/50 text-blue-400 hover:bg-blue-900/20">
+                      Open Visualizer
+                    </Button>
+                  </Link>
                 </Card>
               </div>
             </TabsContent>
