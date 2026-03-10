@@ -15,8 +15,30 @@ import {
   Layers
 } from "lucide-react";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export default function Dashboard() {
+  const [missions, setMissions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchMissions() {
+      try {
+        const response = await fetch('/api/v1/missions', {
+          headers: { 'X-Nexus-Key': 'development_key' } // Default key for dev
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setMissions(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch missions:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchMissions();
+  }, []);
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-50 p-6 font-sans">
       <header className="flex justify-between items-center mb-10 border-b border-neutral-800 pb-6">
