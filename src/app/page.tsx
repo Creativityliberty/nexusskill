@@ -39,6 +39,28 @@ export default function Dashboard() {
     }
     fetchMissions();
   }, []);
+  const createMission = async () => {
+    const goal = prompt("Define your Mission Objective:");
+    if (!goal) return;
+
+    try {
+      const response = await fetch(`/api/v1/mission/plan?goal=${encodeURIComponent(goal)}`, {
+        method: 'POST',
+        headers: { 'X-Nexus-Key': 'development_key' }
+      });
+      if (response.ok) {
+        const newMission = await response.json();
+        // Refresh missions
+        const res = await fetch('/api/v1/missions', {
+          headers: { 'X-Nexus-Key': 'development_key' }
+        });
+        if (res.ok) setMissions(await res.json());
+      }
+    } catch (error) {
+      console.error("Failed to create mission:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-50 p-6 font-sans">
       <header className="flex justify-between items-center mb-10 border-b border-neutral-800 pb-6">
@@ -55,7 +77,10 @@ export default function Dashboard() {
           <Button variant="outline" className="border-neutral-800 hover:bg-neutral-900">
             <Key className="mr-2 h-4 w-4" /> API Keys
           </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-900/20">
+          <Button 
+            onClick={createMission}
+            className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-900/20"
+          >
             <Plus className="mr-2 h-4 w-4" /> New Mission
           </Button>
         </div>
@@ -67,13 +92,16 @@ export default function Dashboard() {
           <Card className="bg-neutral-900/50 border-neutral-800 backdrop-blur-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-neutral-400">Active Missions</CardTitle>
-              <div className="text-3xl font-bold">12</div>
+              <div className="text-3xl font-bold">{missions.length}</div>
             </CardHeader>
             <CardContent>
               <div className="h-1.5 w-full bg-neutral-800 rounded-full overflow-hidden">
-                <div className="h-full w-2/3 bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+                <div 
+                  className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
+                  style={{ width: `${Math.min((missions.length / 20) * 100, 100)}%` }}
+                ></div>
               </div>
-              <p className="text-xs text-neutral-500 mt-2">68% of monthly target projects</p>
+              <p className="text-xs text-neutral-500 mt-2">{((missions.length / 20) * 100).toFixed(0)}% of monthly target projects</p>
             </CardContent>
           </Card>
 
@@ -123,40 +151,47 @@ export default function Dashboard() {
                         <TableHead className="w-[300px] text-neutral-400">Mission</TableHead>
                         <TableHead className="text-neutral-400">Status</TableHead>
                         <TableHead className="text-neutral-400">Agent Focus</TableHead>
-                        <TableHead className="text-right text-neutral-400">Last Trigger</TableHead>
+                        <TableHead className="text-right text-neutral-400">Created</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      <TableRow className="border-neutral-800 hover:bg-neutral-900/50">
-                        <TableCell className="font-medium">
-                          <div className="flex flex-col">
-                            <span>SaaS Fintech Dashboard</span>
-                            <span className="text-xs text-neutral-500">mission_id: m_a782b</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-900/30 text-blue-400 border border-blue-800/50">
-                            Orchestrating
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-neutral-300">Claude Code + Cursor</TableCell>
-                        <TableCell className="text-right text-neutral-500 font-mono text-xs">2m ago</TableCell>
-                      </TableRow>
-                      <TableRow className="border-neutral-800 hover:bg-neutral-900/50">
-                        <TableCell className="font-medium">
-                          <div className="flex flex-col">
-                            <span>Multi-Agent Audit Pipeline</span>
-                            <span className="text-xs text-neutral-500">mission_id: m_b123c</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-900/30 text-green-400 border border-green-800/50">
-                            Phase Gate: Pass
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-neutral-300">Windsurf Agent</TableCell>
-                        <TableCell className="text-right text-neutral-500 font-mono text-xs">45m ago</TableCell>
-                      </TableRow>
+                      {loading ? (
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-center py-10 text-neutral-500 italic">
+                            Synchronizing with Neural Mesh...
+                          </TableCell>
+                        </TableRow>
+                      ) : missions.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-center py-10 text-neutral-500">
+                            No active missions. Trigger a new one to begin orchestration.
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        missions.map((m) => (
+                          <TableRow key={m.id} className="border-neutral-800 hover:bg-neutral-900/50">
+                            <TableCell className="font-medium">
+                              <div className="flex flex-col">
+                                <span>{m.title}</span>
+                                <span className="text-xs text-neutral-500">mission_id: m_{m.id}</span>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${
+                                m.status === 'planned' ? 'bg-blue-900/30 text-blue-400 border-blue-800/50' : 
+                                m.status === 'completed' ? 'bg-green-900/30 text-green-400 border-green-800/50' : 
+                                'bg-neutral-900/30 text-neutral-400 border-neutral-800/50'
+                              }`}>
+                                {m.status.toUpperCase()}
+                              </span>
+                            </TableCell>
+                            <TableCell className="text-neutral-300">Nexus Auto-Pilot</TableCell>
+                            <TableCell className="text-right text-neutral-500 font-mono text-xs">
+                              {new Date(m.created_at).toLocaleDateString()}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
                     </TableBody>
                   </Table>
                 </div>
