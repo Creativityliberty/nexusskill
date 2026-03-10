@@ -126,12 +126,16 @@ export default function Dashboard() {
           </Card>
 
           <nav className="space-y-1">
-            <Button variant="ghost" className="w-full justify-start text-neutral-400 hover:text-white hover:bg-neutral-900">
-              <Rocket className="mr-3 h-4 w-4" /> Missions
-            </Button>
-            <Button variant="ghost" className="w-full justify-start text-neutral-400 hover:text-white hover:bg-neutral-900">
-              <Cpu className="mr-3 h-4 w-4" /> Skill Matrix
-            </Button>
+            <Link href="/">
+              <Button variant="ghost" className="w-full justify-start text-neutral-400 hover:text-white hover:bg-neutral-900">
+                <Rocket className="mr-3 h-4 w-4" /> Missions
+              </Button>
+            </Link>
+            <Link href="/skills">
+              <Button variant="ghost" className="w-full justify-start text-neutral-400 hover:text-white hover:bg-neutral-900">
+                <Cpu className="mr-3 h-4 w-4" /> Skill Matrix
+              </Button>
+            </Link>
             <Button variant="ghost" className="w-full justify-start text-neutral-400 hover:text-white hover:bg-neutral-900">
               <ShieldCheck className="mr-3 h-4 w-4" /> Quality Gates
             </Button>

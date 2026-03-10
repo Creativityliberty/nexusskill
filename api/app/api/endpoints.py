@@ -4,6 +4,7 @@ from app.core.security import get_api_key
 from app.db.base import get_db
 from app.db.models import Skill, Mission
 from sqlalchemy.orm import Session
+from app.services.skill_ingestor import ingest_local_skills
 
 router = APIRouter()
 
@@ -16,6 +17,15 @@ async def list_skills(api_key: str = Depends(get_api_key), db: Session = Depends
             {"name": "ui-style-generator", "description": "Generate a complete UI Design System."}
         ]
     return skills
+
+@router.post("/skills/sync")
+async def sync_skills(api_key: str = Depends(get_api_key)):
+    try:
+        # Note: path-relative to the API root in deployment
+        ingest_local_skills("aiskills-repo/skills")
+        return {"status": "success", "message": "Skills synchronized from repository"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/missions")
 async def list_missions(api_key: str = Depends(get_api_key), db: Session = Depends(get_db)):
