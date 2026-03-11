@@ -32,6 +32,7 @@ export default function Dashboard() {
   const [missions, setMissions] = useState<Mission[]>([]);
   const [loading, setLoading] = useState(true);
   const [showMissionModal, setShowMissionModal] = useState(false);
+  const [stats, setStats] = useState({ skills: 22, missions: 0, keys: 0 });
 
   const fetchMissions = async () => {
     try {
@@ -46,7 +47,17 @@ export default function Dashboard() {
     }
   };
 
-  useEffect(() => { fetchMissions(); }, []);
+  const fetchStats = async () => {
+    try {
+      const res = await fetch('/api/v1/stats');
+      if (res.ok) {
+        const data = await res.json();
+        setStats({ skills: data.skills, missions: data.missions, keys: data.keys });
+      }
+    } catch (e) { console.error("Stats error:", e); }
+  };
+
+  useEffect(() => { fetchMissions(); fetchStats(); }, []);
 
   const handleCreateMission = async (data: { goal: string; priority: string; agent: string }) => {
     try {
@@ -95,23 +106,23 @@ export default function Dashboard() {
           <Card className="bg-neutral-900/50 border-neutral-800 backdrop-blur-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-neutral-400">Active Missions</CardTitle>
-              <div className="text-3xl font-bold">{missions.length}</div>
+              <div className="text-3xl font-bold">{stats.missions}</div>
             </CardHeader>
             <CardContent>
               <div className="h-1.5 w-full bg-neutral-800 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
-                  style={{ width: `${Math.min((missions.length / 20) * 100, 100)}%` }}
+                  style={{ width: `${Math.min((stats.missions / 20) * 100, 100)}%` }}
                 ></div>
               </div>
-              <p className="text-xs text-neutral-500 mt-2">{((missions.length / 20) * 100).toFixed(0)}% of monthly target projects</p>
+              <p className="text-xs text-neutral-500 mt-2">{((stats.missions / 20) * 100).toFixed(0)}% of monthly target</p>
             </CardContent>
           </Card>
 
           <Card className="bg-neutral-900/50 border-neutral-800 backdrop-blur-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-neutral-400">Skills Synchronized</CardTitle>
-              <div className="text-3xl font-bold text-green-500">22</div>
+              <div className="text-3xl font-bold text-green-500">{stats.skills}</div>
             </CardHeader>
             <CardContent>
               <p className="text-xs text-neutral-500">Across 8 configured agents</p>
