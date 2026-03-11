@@ -1,5 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+import traceback
+import sys
+import os
 
 from app.api.endpoints import router as api_router
 from app.db.base import engine, Base
@@ -20,6 +24,18 @@ app = FastAPI(
     description="The brain of the N\u00fcmtema AI FOUNDRY mission engine.",
     version="1.0.0"
 )
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={
+            "detail": str(exc),
+            "traceback": traceback.format_exc(),
+            "cwd": os.getcwd(),
+            "path": sys.path
+        },
+    )
 
 app.include_router(api_router, prefix="/v1")
 
