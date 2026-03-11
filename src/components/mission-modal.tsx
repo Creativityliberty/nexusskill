@@ -89,9 +89,11 @@ export default function MissionModal({ onClose, onSubmit }: MissionModalProps) {
                 onChange={(e) => setAgent(e.target.value)}
                 className="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-2.5 text-sm text-neutral-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
-                <option value="claude-sonnet">Claude Sonnet</option>
-                <option value="claude-opus">Claude Opus</option>
-                <option value="gemini-pro">Gemini Pro</option>
+                <option value="antigravity">Antigravity (Local Elite)</option>
+                <option value="claude-sonnet">Claude 3.7 Sonnet</option>
+                <option value="claude-opus">Claude 3.5 Opus</option>
+                <option value="gemini-flash">Gemini 2.0 Flash</option>
+                <option value="deepseek-r1">DeepSeek R1</option>
                 <option value="cursor-agent">Cursor Agent</option>
                 <option value="windsurf-agent">Windsurf Agent</option>
               </select>
