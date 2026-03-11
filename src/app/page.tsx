@@ -187,7 +187,7 @@ export default function Dashboard() {
                         </TableRow>
                       ) : (
                         missions.map((m) => (
-                          <TableRow key={m.id} className="border-neutral-800 hover:bg-neutral-900/50">
+                          <TableRow key={m.id} className="border-neutral-800 hover:bg-neutral-900/50 cursor-pointer" onClick={() => window.location.href = `/mission/${m.id}`}>
                             <TableCell className="font-medium">
                               <div className="flex flex-col">
                                 <span>{m.title}</span>
@@ -196,8 +196,9 @@ export default function Dashboard() {
                             </TableCell>
                             <TableCell>
                               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${
-                                m.status === 'planned' ? 'bg-blue-900/30 text-blue-400 border-blue-800/50' : 
-                                m.status === 'completed' ? 'bg-green-900/30 text-green-400 border-green-800/50' : 
+                                m.status === 'planned' ? 'bg-blue-900/30 text-blue-400 border-blue-800/50' :
+                                m.status === 'in_progress' ? 'bg-yellow-900/30 text-yellow-400 border-yellow-800/50' :
+                                m.status === 'completed' || m.status === 'done' ? 'bg-green-900/30 text-green-400 border-green-800/50' :
                                 'bg-neutral-900/30 text-neutral-400 border-neutral-800/50'
                               }`}>
                                 {m.status.toUpperCase()}
