@@ -1,69 +1,108 @@
-# 🌌 NEXUS — The Mission Engine for the Agent-Native Era
+# 🛰️ Nexus Hub — Nümtéma AI Foundry
 
-> **One System. Two Modes. Build everything, empower every agent.**
+**Mission Orchestration Engine for AI Agents**
 
-Nexus is a professional-grade orchestration framework designed to bridge the gap between human vision and AI agent execution. It transforms project ideas into structured, high-quality deliverables while simultaneously optimizing your entire documentation for **39+ AI Coding Agents**.
-
-[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
-[![Organization: Nümtema AI Foundry](https://img.shields.io/badge/Org-Nümtema_AI_Foundry-blue.svg)](mailto:creativityliberty@gmail.com)
+Deploy, manage, and visualize AI-powered missions across 39+ coding agents with real-time execution tracking, interactive DAGs, and a cloud-native architecture.
 
 ---
 
-## 🚀 Key Pillars
+## ⚡ Quick Start (Any Machine)
 
-### 🧠 Mission Engine
-Decompose complex goals into actionable missions. Use built-in templates for **SaaS**, **APIs**, **Multi-Agent Systems**, and **CLI Tools**.
-- **Quality Gates**: Ensure architecture and core flows are validated before deployment.
-- **Smart Delegation**: Orchestrates specialized skills (`context-builder`, `prd-pro`, `ui-style-gen`) to build project components.
-
-### ⚡ Agent Skill System (Mode B)
-Make your project the best-documented codebase for AI agents like **Claude Code**, **Cursor**, **Windsurf**, and **Cline**.
-- **Agent-Native Profiles**: Automatically adapts `SKILL.md` files based on the unique system prompts of 32 AI agents.
-- **Universal Installer**: One command to sync all project skills to your IDE's internal directories.
-
----
-
-## 🛠️ Quick Start
-
-### 1. Install Nexus
 ```bash
+# 1. Clone
 git clone https://github.com/Creativityliberty/nexusskill.git
 cd nexusskill
+
+# 2. Run setup wizard
+node scripts/setup.js
+
+# 3. Start dev server
+npm run dev
 ```
 
-### 2. Launch the CLI
-Nexus comes with a premium Python CLI to manage your skills:
+Open [http://localhost:3000](http://localhost:3000) 🚀
+
+---
+
+## 🏗️ Architecture
+
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | Next.js 14 (App Router) + Tailwind + Shadcn UI |
+| **API** | Next.js Route Handlers (`/api/v1/*`) |
+| **Database** | Neon PostgreSQL (serverless) |
+| **Hosting** | Vercel (auto-deploy from `main`) |
+| **Agents** | 39 AI coding agents supported |
+
+## 📦 Features
+
+- **🎮 Mission Engine** — Play/Pause/Stop/Skip task execution with real-time DB persistence
+- **🕸️ DAG Visualizer** — Animated SVG mission graphs with live status tracking
+- **🔍 Skill Matrix** — 22 proprietary skills with tree view explorer
+- **📜 Pipeline Log** — Terminal-style execution log
+- **🔑 API Key Management** — Secure SHA-256 key generation
+- **🛰️ Multi-Agent Installer** — Auto-detect and configure 39 AI agents
+
+## 🔌 API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/v1/missions` | List all missions |
+| `GET` | `/api/v1/missions/:id` | Get mission with tasks |
+| `POST` | `/api/v1/mission/plan?goal=...` | Create mission + tasks |
+| `GET` | `/api/v1/skills` | List synchronized skills |
+| `POST` | `/api/v1/skills/sync` | Sync skills to database |
+| `GET` | `/api/v1/stats` | Dashboard statistics |
+| `GET` | `/api/v1/visualize` | DAG graph data |
+| `PATCH` | `/api/v1/tasks/:id/status` | Update task status |
+| `GET` | `/api/v1/keys` | List API keys |
+| `POST` | `/api/v1/keys/generate?name=...` | Generate new API key |
+
+## 🤖 Supported Agents (39)
+
+Run `node scripts/install-skills.js` to auto-detect and configure:
+
+**Universal** (read `.agents/skills/` directly): Amp, Codex, Gemini CLI, GitHub Copilot, Kimi Code, OpenCode
+
+**Project-scoped** (symlinked): Antigravity, Claude Code, Cursor, Windsurf, Cline, Continue, Goose, Trae, Roo Code, and 24 more.
+
+## 🚀 Deploy to Vercel
+
 ```bash
-python nexus-skill.py ls       # List available skills
-python nexus-skill.py sync     # Sync project to all your agents
+# One-time setup
+npx vercel link
+
+# Set environment variable
+npx vercel env add DATABASE_URL
+
+# Deploy
+npx vercel --prod
 ```
 
-### 3. Build Your First Mission
-Simply tell Nexus what you want to build, and it will trigger **Mode A** to plan your journey.
+## 📁 Project Structure
+
+```
+nexusskill/
+├── src/
+│   ├── app/
+│   │   ├── page.tsx              # Dashboard
+│   │   ├── skills/page.tsx       # Skill Matrix
+│   │   ├── keys/page.tsx         # API Key Management
+│   │   ├── visualizer/page.tsx   # V-Mesh DAG Visualizer
+│   │   ├── mission/[id]/page.tsx # Mission Detail + Engine
+│   │   └── api/v1/              # All API routes
+│   ├── components/
+│   │   ├── skill-detail-modal.tsx
+│   │   └── mission-modal.tsx
+│   └── lib/
+│       ├── db.ts                # Neon connection
+│       └── skills-data.ts       # Skill catalog
+├── scripts/
+│   ├── setup.js                 # Setup wizard
+│   └── install-skills.js        # 39-agent installer
+└── .env.example                 # Environment template
+```
 
 ---
 
-## 📂 Directory Structure
-
-- `docs/`: Technical specifications, agent profiles, and quality gate definitions.
-- `scripts/`: Implementation scripts for document generation and optimization.
-- `templates/`: Professional blueprints for various project types.
-- `aiskills-repo/`: Our bundled portfolio of 22+ specialized local skills.
-
----
-
-## 📈 The Nexus Strategy
-Nexus isn't just a tool; it's a productivity standard. By adopting the **Nexus Mission Pattern**, you ensure that your projects are:
-1. **Readable by Humans** (Structured docs & PRDs).
-2. **Masterable by agents** (Optimized skills & context).
-
----
-
-## 🤝 Contact & Contributing
-**Lionel Nümtema**  
-Founder, Nümtema AI FOUNDRY  
-📧 [creativityliberty@gmail.com](mailto:creativityliberty@gmail.com)
-
-*Note: This project is under a private proprietary license. All rights reserved by Nümtema AI FOUNDRY.*
-
-*Created with ❤️ for the world of autonomous agents.*
+© 2026 Nümtéma AI Foundry • Proprietary Technology
