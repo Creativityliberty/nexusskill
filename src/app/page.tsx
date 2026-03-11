@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import MissionModal from "@/components/mission-modal";
 
 interface Mission {
   id: number;
@@ -30,41 +31,31 @@ interface Mission {
 export default function Dashboard() {
   const [missions, setMissions] = useState<Mission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showMissionModal, setShowMissionModal] = useState(false);
 
-  useEffect(() => {
-    async function fetchMissions() {
-      try {
-        const response = await fetch('/api/v1/missions', {
-          headers: { 'X-Nexus-Key': 'development_key' } // Default key for dev
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setMissions(data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch missions:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchMissions();
-  }, []);
-  const createMission = async () => {
-    const goal = prompt("Define your Mission Objective:");
-    if (!goal) return;
-
+  const fetchMissions = async () => {
     try {
-      const response = await fetch(`/api/v1/mission/plan?goal=${encodeURIComponent(goal)}`, {
-        method: 'POST',
-        headers: { 'X-Nexus-Key': 'development_key' }
+      const response = await fetch('/api/v1/missions');
+      if (response.ok) {
+        setMissions(await response.json());
+      }
+    } catch (error) {
+      console.error("Failed to fetch missions:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchMissions(); }, []);
+
+  const handleCreateMission = async (data: { goal: string; priority: string; agent: string }) => {
+    try {
+      const response = await fetch(`/api/v1/mission/plan?goal=${encodeURIComponent(data.goal)}`, {
+        method: 'POST'
       });
       if (response.ok) {
-        const newMission = await response.json();
-        // Refresh missions
-        const res = await fetch('/api/v1/missions', {
-          headers: { 'X-Nexus-Key': 'development_key' }
-        });
-        if (res.ok) setMissions(await res.json());
+        setShowMissionModal(false);
+        await fetchMissions();
       }
     } catch (error) {
       console.error("Failed to create mission:", error);
@@ -90,7 +81,7 @@ export default function Dashboard() {
             </Button>
           </Link>
           <Button 
-            onClick={createMission}
+            onClick={() => setShowMissionModal(true)}
             className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-900/20"
           >
             <Plus className="mr-2 h-4 w-4" /> New Mission
@@ -251,8 +242,15 @@ export default function Dashboard() {
         </div>
       </main>
 
+      {showMissionModal && (
+        <MissionModal
+          onClose={() => setShowMissionModal(false)}
+          onSubmit={handleCreateMission}
+        />
+      )}
+
       <footer className="mt-12 text-center text-neutral-600 text-xs border-t border-neutral-900 pt-8">
-        &copy; 2026 N\u00fcmtema AI FOUNDRY \u2022 All Rights Reserved \u2022 Proprietary Technology
+        &copy; 2026 Nümtema AI FOUNDRY • All Rights Reserved • Proprietary Technology
       </footer>
     </div>
   );

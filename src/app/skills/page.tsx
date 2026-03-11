@@ -3,10 +3,9 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { 
-  ChevronLeft, 
-  Search, 
+import {
+  ChevronLeft,
+  Search,
   RefreshCw,
   Code,
   Terminal,
@@ -14,8 +13,10 @@ import {
   Layers
 } from "lucide-react";
 import Link from 'next/link';
+import SkillDetailModal from "@/components/skill-detail-modal";
+import { SKILLS_CATALOG, type SkillData } from "@/lib/skills-data";
 
-interface Skill {
+interface SkillFromDB {
   id: number;
   name: string;
   description: string;
@@ -23,9 +24,11 @@ interface Skill {
 }
 
 export default function SkillMatrix() {
-  const [skills, setSkills] = useState<Skill[]>([]);
+  const [skills, setSkills] = useState<SkillFromDB[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
+  const [search, setSearch] = useState("");
+  const [selectedSkill, setSelectedSkill] = useState<SkillData | null>(null);
 
   const fetchSkills = async () => {
     setLoading(true);
@@ -44,23 +47,14 @@ export default function SkillMatrix() {
   const handleSync = async () => {
     setSyncing(true);
     try {
-      const response = await fetch('/api/v1/skills/sync', {
-        method: 'POST'
-      });
+      const response = await fetch('/api/v1/skills/sync', { method: 'POST' });
       if (response.ok) {
-        const text = await response.text();
-        try {
-          const data = JSON.parse(text);
-          alert(data.message || "Skills synchronized!");
-        } catch (e) {
-          console.error("JSON Parse error:", text);
-          alert(`Sync partly success but invalid JSON: ${text.substring(0, 100)}...`);
-        }
+        const data = await response.json();
+        alert(data.message || "Skills synchronized!");
         await fetchSkills();
       } else {
         const text = await response.text();
-        console.error("Sync error response:", text);
-        alert(`Sync failed (Server Error): ${text.substring(0, 100)}...`);
+        alert(`Sync failed: ${text.substring(0, 150)}`);
       }
     } catch (error) {
       console.error("Sync failed:", error);
@@ -69,9 +63,26 @@ export default function SkillMatrix() {
     }
   };
 
-  useEffect(() => {
-    fetchSkills();
-  }, []);
+  const openSkillDetail = (skillName: string) => {
+    const catalogSkill = SKILLS_CATALOG.find(s => s.name === skillName);
+    if (catalogSkill) {
+      setSelectedSkill(catalogSkill);
+    }
+  };
+
+  useEffect(() => { fetchSkills(); }, []);
+
+  const filteredSkills = skills.filter(s =>
+    s.name.toLowerCase().includes(search.toLowerCase()) ||
+    s.description?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const iconForSkill = (name: string) => {
+    if (name.includes("agent") || name.includes("orchestra")) return <Cpu className="text-purple-500 w-5 h-5" />;
+    if (name.includes("kernel") || name.includes("flow")) return <Layers className="text-orange-500 w-5 h-5" />;
+    if (name.includes("mcp") || name.includes("nano")) return <Terminal className="text-green-500 w-5 h-5" />;
+    return <Code className="text-blue-500 w-5 h-5" />;
+  };
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-50 p-6 font-sans">
@@ -90,14 +101,16 @@ export default function SkillMatrix() {
         <div className="flex items-center gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
-            <input 
-              type="text" 
-              placeholder="Search skills..." 
+            <input
+              type="text"
+              placeholder="Search skills..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="bg-neutral-900 border border-neutral-800 rounded-md pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-64"
             />
           </div>
-          <Button 
-            onClick={handleSync} 
+          <Button
+            onClick={handleSync}
             disabled={syncing}
             className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
           >
@@ -112,17 +125,21 @@ export default function SkillMatrix() {
           <div className="col-span-full py-20 text-center text-neutral-500 italic">
             Fetching agent neuro-nodes...
           </div>
-        ) : skills.length === 0 ? (
+        ) : filteredSkills.length === 0 ? (
           <div className="col-span-full py-20 text-center text-neutral-500">
-            No skills found in the mesh. Trigger a sync to import from aiskills-repo.
+            {search ? `No skills matching "${search}"` : "No skills found. Trigger a sync to import."}
           </div>
         ) : (
-          skills.map((skill) => (
-            <Card key={skill.id} className="bg-neutral-900/50 border-neutral-800 hover:border-blue-900/50 transition-all hover:bg-neutral-900 group">
+          filteredSkills.map((skill, idx) => (
+            <Card
+              key={skill.id || idx}
+              className="bg-neutral-900/50 border-neutral-800 hover:border-blue-900/50 transition-all hover:bg-neutral-900 group cursor-pointer"
+              onClick={() => openSkillDetail(skill.name)}
+            >
               <CardHeader className="pb-3 px-6 pt-6">
                 <div className="flex justify-between items-start mb-2">
                   <div className="w-10 h-10 bg-neutral-800 rounded flex items-center justify-center group-hover:bg-blue-900/20 transition-colors">
-                    <Code className="text-blue-500 w-5 h-5" />
+                    {iconForSkill(skill.name)}
                   </div>
                   <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-widest">
                     v1.0.0
@@ -144,11 +161,11 @@ export default function SkillMatrix() {
                 </div>
                 <div className="flex items-center justify-between pt-4 border-t border-neutral-800/50">
                   <span className="text-[10px] text-neutral-600 font-mono">
-                    SYNC: {new Date(skill.last_sync).toLocaleDateString()}
+                    SYNC: {skill.last_sync ? new Date(skill.last_sync).toLocaleDateString() : "N/A"}
                   </span>
-                  <Button variant="link" className="h-auto p-0 text-blue-500 text-xs hover:text-blue-400">
-                    View Details
-                  </Button>
+                  <span className="text-blue-500 text-xs group-hover:text-blue-400 transition-colors">
+                    View Details →
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -156,8 +173,15 @@ export default function SkillMatrix() {
         )}
       </main>
 
+      {selectedSkill && (
+        <SkillDetailModal
+          skill={selectedSkill}
+          onClose={() => setSelectedSkill(null)}
+        />
+      )}
+
       <footer className="mt-12 text-center text-neutral-600 text-[10px] font-mono border-t border-neutral-900 pt-8">
-        HUB CORE: skill-ingestor v1.2 \u2022 AGENT MESH: ACTIVE \u2022 N\u00dcMTEMA PROPERTY
+        HUB CORE: skill-ingestor v1.2 • AGENT MESH: ACTIVE • NÜMTEMA PROPERTY
       </footer>
     </div>
   );

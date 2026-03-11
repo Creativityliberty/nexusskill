@@ -29,9 +29,7 @@ export default function ApiKeysPortal() {
   const fetchKeys = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/v1/keys', {
-        headers: { 'X-Nexus-Key': 'development_key' }
-      });
+      const response = await fetch('/api/v1/keys');
       if (response.ok) {
         setKeys(await response.json());
       }
@@ -48,8 +46,7 @@ export default function ApiKeysPortal() {
 
     try {
       const response = await fetch(`/api/v1/keys/generate?name=${encodeURIComponent(name)}`, {
-        method: 'POST',
-        headers: { 'X-Nexus-Key': 'development_key' }
+        method: 'POST'
       });
       if (response.ok) {
         const data = await response.json();
