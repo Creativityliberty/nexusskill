@@ -52,7 +52,7 @@ function useEngine(tasks: Task[], setTasks: (fn: (prev: Task[]) => Task[]) => vo
     tRef.current = setInterval(() => setElapsed(b + Date.now() - t0.current), 100);
   };
 
-  const nextPending = (arr: Task[]) => arr.find(t => t.status === "pending");
+  const nextPending = (arr: Task[]) => arr.find(t => t.status === "pending" || t.status === "in_progress");
 
   const updateTaskStatus = async (taskId: number, status: string) => {
     try {
@@ -93,9 +93,16 @@ function useEngine(tasks: Task[], setTasks: (fn: (prev: Task[]) => Task[]) => vo
 
   const play = useCallback(() => {
     if (state === "done") return;
+    // Normalize any non-standard statuses to "pending" before starting
+    setTasks(prev => prev.map(t =>
+      ["pending", "done", "running", "paused", "blocked"].includes(t.status)
+        ? t : { ...t, status: "pending" }
+    ));
     setState("running");
     addLog("▪ Engine started", "info");
     clock();
+    // Fire first tick immediately, then every 2.5s
+    setTimeout(tick, 100);
     iRef.current = setInterval(tick, 2500);
   }, [state, addLog, tick]);
 
@@ -144,11 +151,13 @@ function useEngine(tasks: Task[], setTasks: (fn: (prev: Task[]) => Task[]) => vo
 
 // ═══ STATUS HELPERS ═══
 const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
-  done:    { label: "DONE",    color: "#22c55e", bg: "rgba(34,197,94,0.15)" },
-  running: { label: "RUNNING", color: "#3b82f6", bg: "rgba(59,130,246,0.15)" },
-  paused:  { label: "PAUSED",  color: "#eab308", bg: "rgba(234,179,8,0.15)" },
-  pending: { label: "PENDING", color: "#737373", bg: "rgba(115,115,115,0.1)" },
-  blocked: { label: "BLOCKED", color: "#ef4444", bg: "rgba(239,68,68,0.15)" },
+  done:        { label: "DONE",        color: "#22c55e", bg: "rgba(34,197,94,0.15)" },
+  running:     { label: "RUNNING",     color: "#3b82f6", bg: "rgba(59,130,246,0.15)" },
+  in_progress: { label: "IN PROGRESS", color: "#3b82f6", bg: "rgba(59,130,246,0.15)" },
+  paused:      { label: "PAUSED",      color: "#eab308", bg: "rgba(234,179,8,0.15)" },
+  pending:     { label: "PENDING",     color: "#737373", bg: "rgba(115,115,115,0.1)" },
+  blocked:     { label: "BLOCKED",     color: "#ef4444", bg: "rgba(239,68,68,0.15)" },
+  planned:     { label: "PLANNED",     color: "#8b5cf6", bg: "rgba(139,92,246,0.15)" },
 };
 
 // ═══ MAIN PAGE ═══
