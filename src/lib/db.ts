@@ -37,4 +37,14 @@ export async function initDB() {
       created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
     )
   `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS tasks (
+      id SERIAL PRIMARY KEY,
+      mission_id INTEGER REFERENCES missions(id) ON DELETE CASCADE,
+      label VARCHAR(255) NOT NULL,
+      skill VARCHAR(100),
+      status VARCHAR(50) DEFAULT 'pending',
+      "order" INTEGER DEFAULT 0
+    )
+  `;
 }
