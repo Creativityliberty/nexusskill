@@ -30,9 +30,7 @@ export default function SkillMatrix() {
   const fetchSkills = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/v1/skills', {
-        headers: { 'X-Nexus-Key': 'development_key' }
-      });
+      const response = await fetch('/api/v1/skills');
       if (response.ok) {
         setSkills(await response.json());
       }
@@ -47,8 +45,7 @@ export default function SkillMatrix() {
     setSyncing(true);
     try {
       const response = await fetch('/api/v1/skills/sync', {
-        method: 'POST',
-        headers: { 'X-Nexus-Key': 'development_key' }
+        method: 'POST'
       });
       if (response.ok) {
         const text = await response.text();
