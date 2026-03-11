@@ -16,6 +16,7 @@ export async function POST(request: NextRequest) {
     try {
       const body = await request.json();
       if (body.objective) goal = body.objective;
+      if (body.goal) goal = body.goal;
       if (body.agent) agent = body.agent;
     } catch { /* query param fallback */ }
 

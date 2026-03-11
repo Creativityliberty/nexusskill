@@ -61,8 +61,15 @@ export default function Dashboard() {
 
   const handleCreateMission = async (data: { goal: string; priority: string; agent: string }) => {
     try {
-      const response = await fetch(`/api/v1/mission/plan?goal=${encodeURIComponent(data.goal)}`, {
-        method: 'POST'
+      const response = await fetch('/api/v1/mission/plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          objective: data.goal,
+          goal: data.goal, 
+          priority: data.priority, 
+          agent: data.agent 
+        })
       });
       if (response.ok) {
         setShowMissionModal(false);
@@ -82,7 +89,7 @@ export default function Dashboard() {
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">NEXUS HUB</h1>
-            <p className="text-sm text-neutral-400">N\u00fcmtema AI FOUNDRY \u2022 Mission Engine v1.0</p>
+            <p className="text-sm text-neutral-400">NÜMTÉMA AI FOUNDRY • Mission Engine v2.0</p>
           </div>
         </div>
         <div className="flex items-center gap-4">

@@ -104,7 +104,7 @@ export default function MissionModal({ onClose, onSubmit }: MissionModalProps) {
         {/* Footer */}
         <div className="p-4 border-t border-neutral-800 bg-neutral-950/50 flex justify-between items-center">
           <span className="text-[10px] font-mono text-neutral-600">
-            NEXUS MISSION ENGINE v1.0
+            NEXUS MISSION ENGINE v2.0
           </span>
           <div className="flex gap-3">
             <button
