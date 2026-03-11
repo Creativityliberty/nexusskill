@@ -223,8 +223,8 @@ export default function MissionDetail() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-xl font-bold tracking-tight">{mission.title}</h1>
-            <p className="text-sm text-neutral-500 mt-1">{mission.description}</p>
+            <h1 className="text-xl font-bold tracking-tight text-blue-400">{mission.title}</h1>
+            <p className="text-sm text-neutral-500 mt-1 italic">{mission.description}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
