@@ -16,6 +16,7 @@ interface Task {
   label: string;
   skill: string;
   status: string;
+  output: string | null;
   order: number;
 }
 
@@ -357,6 +358,12 @@ export default function MissionDetail() {
                     {sc.label}
                   </span>
                 </div>
+                {task.output && (
+                  <div className="mt-4 p-3 bg-black/40 rounded-lg border border-neutral-800 font-mono text-[11px] text-blue-300 whitespace-pre-wrap">
+                    <div className="text-[9px] text-neutral-600 mb-2 uppercase tracking-widest border-b border-neutral-800 pb-1">Execution Output</div>
+                    {task.output}
+                  </div>
+                )}
               </div>
             );
           })}
